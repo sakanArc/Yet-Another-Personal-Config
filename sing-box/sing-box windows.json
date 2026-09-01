@@ -188,7 +188,6 @@
       "dns_mode": "hijack",
       "auto_route": true,
       "strict_route": true,
-      "endpoint_independent_nat": false,
       "udp_timeout": "2m",
       "udp_mapping": "endpoint_independent",
       "udp_filtering": "endpoint_independent",
