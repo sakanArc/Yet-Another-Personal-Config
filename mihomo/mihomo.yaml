@@ -1,0 +1,199 @@
+mixed-port: 8118
+allow-lan: false
+find-process-mode: strict
+mode: rule
+geox-url:
+  geosite: https://testingcf.jsdelivr.net/gh/v2fly/domain-list-community@release/dlc.dat
+  mmdb: https://testingcf.jsdelivr.net/gh/appshubcc/bett-rules@release/geoip.metadb
+geo-auto-update: true
+geo-update-interval: 24
+geosite-matcher: succinct
+geodata-mode: false
+geodata-loader: memconservative
+global-ua: ClashMetaForAndroid/2.11.33.Meta
+etag-support: true
+log-level: warning
+ipv6: true
+external-controller: 127.0.0.1:9090
+tcp-concurrent: true
+external-ui: ./zashboard
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
+disable-keep-alive: false
+keep-alive-idle: 90
+keep-alive-interval: 30
+profile:
+  store-selected: true
+  store-fake-ip: true
+unified-delay: true
+
+tun:
+  enable: true
+  stack: system
+  dns-hijack:
+    - udp://any:53
+    - tcp://any:53
+  auto-detect-interface: true
+  auto-route: true
+  mtu: 9000
+  strict-route: true
+  disable-icmp-forwarding: false
+  endpoint-independent-nat: false
+  device: utun0
+  udp-timeout: 60
+
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: false
+  override-destination: false
+  sniff:
+    QUIC:
+      ports:
+        - 443
+        - 8443
+    TLS:
+      ports:
+        - 443
+        - 8443
+    HTTP:
+      ports:
+        - 80
+        - 8080-8880
+
+hosts:
+  dns.alidns.com:
+    - 223.5.5.5
+    - 223.6.6.6
+    - 2400:3200::1
+    - 2400:3200:baba::1
+  dns.adguard-dns.com:
+    - 94.140.14.14
+    - 94.140.15.15
+
+dns:
+  cache-algorithm: arc
+  enable: true
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: false
+  listen: 0.0.0.0:53
+  ipv6: true
+  ipv6-timeout: 200
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter:
+    - geosite:private
+    - geosite:category-ntp
+    - geosite:category-stun
+    - geosite:category-speedtest
+  fake-ip-filter-mode: blacklist
+  respect-rules: false
+  default-nameserver:
+    - 223.5.5.5
+    - 223.6.6.6
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query#DIRECT&h3=true
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query#DIRECT&h3=true
+  direct-nameserver-follow-policy: true
+  nameserver:
+    - quic://dns.adguard-dns.com#🎯手动选择
+  nameserver-policy:
+    geosite:category-ads-all: rcode://success
+
+proxy-groups:
+  - name: 🎯手动选择
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: 🔤Google
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: 🤖AI
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: ✈️Telegram SG
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: ✈️Telegram NL
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: ✈️Telegram US
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: 🍎Apple
+    type: select
+    proxies:
+      - DIRECT
+      - 🎯手动选择
+    use:
+      - proxy
+    hidden: false
+
+  - name: 📺bilibili
+    type: select
+    proxies:
+      - DIRECT
+      - 🎯手动选择
+    use:
+      - proxy
+    hidden: false
+
+proxy-providers:
+  proxy:
+    type: http
+    url: https://example.com
+    interval: 0
+    path: ./proxy_providers/proxy.yaml
+    proxy: DIRECT
+    exclude-filter: ":"
+    health-check:
+      enable: true
+      interval: 3600
+      timeout: 5000
+      lazy: true
+      url: https://captive.apple.com/
+    override:
+      udp: true
+      tfo: true
+      mptcp: true
+
+rules:
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,category-ads-all,REJECT
+  - GEOSITE,google,🔤Google
+  - GEOSITE,category-ai-!cn,🤖AI
+  - SUB-RULE,(GEOSITE,telegram),telegram
+  - SUB-RULE,(GEOIP,telegram,no-resolve),telegram
+  - GEOSITE,apple,🍎Apple
+  - GEOSITE,geolocation-!cn@cn,DIRECT
+  - GEOSITE,geolocation-!cn,🎯手动选择
+  - GEOSITE,bilibili,📺bilibili
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT
+  - MATCH,🎯手动选择
+
+sub-rules:
+  telegram:
+    - GEOIP,nl,✈️Telegram NL
+    - GEOIP,us,✈️Telegram US
+    - MATCH,✈️Telegram SG
