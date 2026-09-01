@@ -1,0 +1,333 @@
+{
+  "$schema": "https://sing-box.sagernet.org/schema.json",
+  "log": {
+    "disabled": false,
+    "level": "warn",
+    "output": "",
+    "timestamp": false
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "local",
+        "tag": "Local_DNS",
+        "prefer_go": true,
+        "detour": "Direct"
+      },
+      {
+        "type": "hosts",
+        "tag": "DNS_hosts",
+        "predefined": {
+          "dns.alidns.com": ["223.5.5.5", "223.6.6.6"],
+          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15"]
+        }
+      },
+      {
+        "type": "h3",
+        "tag": "Direct_DNS",
+        "server": "dns.alidns.com",
+        "server_port": 443,
+        "path": "/dns-query",
+        "detour": "Direct",
+        "domain_resolver": "DNS_hosts"
+      },
+      {
+        "type": "quic",
+        "tag": "Remote_DNS",
+        "server": "dns.adguard-dns.com",
+        "server_port": 853,
+        "detour": "节点选择",
+        "domain_resolver": "DNS_hosts"
+      },
+      {
+        "type": "fakeip",
+        "tag": "Fake_DNS",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": ["geosite-private"],
+        "action": "route",
+        "server": "Local_DNS"
+      },
+      {
+        "clash_mode": "direct",
+        "action": "route",
+        "server": "Direct_DNS"
+      },
+      {
+        "clash_mode": "global",
+        "action": "route",
+        "server": "Fake_DNS"
+      },
+      {
+        "rule_set": ["geosite-category-ads-all"],
+        "action": "predefined",
+        "rcode": "NOERROR"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": ["geosite-category-stun", "geosite-category-voip", "geosite-category-ntp"]
+          },
+          {
+            "rule_set": ["geosite-cn"],
+            "invert": true
+          }
+        ],
+        "action": "route",
+        "server": "Remote_DNS"
+      },
+      {
+        "rule_set": ["geosite-geolocation-!cn"],
+        "action": "route",
+        "server": "Fake_DNS"
+      },
+      {
+        "rule_set": ["geosite-cn"],
+        "action": "route",
+        "server": "Direct_DNS"
+      },
+      {
+        "action": "evaluate",
+        "server": "Remote_DNS",
+        "tag": "No_matches",
+        "disable_cache": false,
+        "disable_optimistic_cache": false,
+        "client_subnet": "111.27.6.0/24",
+        "remove_client_subnet": false
+      },
+      {
+        "match_response": "No_matches",
+        "ip_cidr": ["0.0.0.0"],
+        "action": "predefined",
+        "rcode": "NOERROR"
+      },
+      {
+        "match_response": "No_matches",
+        "rule_set": "geoip-cn",
+        "action": "route",
+        "server": "Direct_DNS"
+      },
+      {
+        "match_response": "No_matches",
+        "action": "route",
+        "server": "Fake_DNS"
+      }
+    ],
+    "final": "Remote_DNS",
+    "strategy": "prefer_ipv4",
+    "disable_cache": false,
+    "disable_expire": false,
+    "cache_capacity": 2048,
+    "optimistic": true,
+    "reverse_mapping": true
+  },
+  "ntp": {
+    "enabled": false,
+    "server": "ntp.ntsc.ac.cn",
+    "server_port": 123,
+    "interval": "1h",
+    "detour": "Direct",
+    "domain_resolver": "Direct_DNS"
+  },
+  "certificate": {
+    "store": "mozilla"
+  },
+  "http_clients": [
+    {
+      "tag": "HTTP-Direct",
+      "engine": "go",
+      "version": 2,
+      "disable_version_fallback": false,
+      "headers": {},
+      "detour": "Direct",
+      "tcp_fast_open": true,
+      "disable_tcp_keep_alive": true,
+      "domain_resolver": "Direct_DNS"
+    },
+    {
+      "tag": "HTTP-Proxy",
+      "engine": "go",
+      "version": 2,
+      "disable_version_fallback": false,
+      "headers": {},
+      "detour": "节点选择",
+      "tcp_fast_open": true,
+      "disable_tcp_keep_alive": true,
+      "domain_resolver": "Fake_DNS"
+    }
+  ],
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "Tun-in",
+      "interface_name": "utun0",
+      "address": [
+        "172.18.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "mtu": 9000,
+      "dns_mode": "hijack",
+      "auto_route": true,
+      "strict_route": true,
+      "endpoint_independent_nat": false,
+      "udp_timeout": "2m",
+      "udp_mapping": "endpoint_independent",
+      "udp_filtering": "endpoint_independent",
+      "udp_nat_max": 0,
+      "stack": "mixed",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 8228
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "节点选择",
+      "outbounds": [
+        "Direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "direct",
+      "tag": "Direct",
+      "tcp_fast_open": true,
+      "tcp_multi_path": true,
+      "disable_tcp_keep_alive": false,
+      "tcp_keep_alive": "2m",
+      "tcp_keep_alive_interval": "30s"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "rule_set": ["geosite-private"],
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "Direct"
+      },
+      {
+        "rule_set": ["geosite-category-ads-all"],
+        "action": "reject",
+        "method": "default"
+      },
+      {
+        "rule_set": ["geosite-geolocation-!cn"],
+        "action": "route",
+        "outbound": "节点选择"
+      },
+      {
+        "rule_set": ["geosite-cn", "geoip-cn"],
+        "action": "route",
+        "outbound": "Direct"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geosite-private",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-ads-all",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-geolocation-!cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-stun",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-voip",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-ntp",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/cn.srs",
+        "update_interval": "1d"
+      }
+    ],
+    "final": "节点选择",
+    "auto_detect_interface": true,
+    "default_http_client": "HTTP-Direct",
+    "default_domain_resolver": "Direct_DNS"
+  },
+  "services": [
+    {
+      "type": "api",
+      "listen": "127.0.0.1",
+      "listen_port": 9090,
+      "tcp_fast_open": true,
+      "secret": "114514",
+      "access_control_allow_private_network": false,
+      "dashboard": {
+        "enabled": true,
+        "path": "dashboard",
+        "download_url": "https://github.com/SagerNet/sing-box-dashboard/archive/refs/heads/gh-pages.zip",
+        "http_client": "HTTP-Proxy",
+        "update_interval": "1d"
+      }
+    }
+  ],
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "path": "cache.db",
+      "cache_id": "test",
+      "store_fakeip": true,
+      "store_dns": true
+    }
+  }
+}
