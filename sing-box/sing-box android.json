@@ -497,7 +497,7 @@
         "enabled": true,
         "path": "zashboard",
         "download_url": "https://github.com/Zephyruso/zashboard/releases/download/v3.22.0/dist-no-fonts.zip",
-        "http_client": "HTTP-Proxy",
+        "http_client": "HTTP-Direct",
         "update_interval": "1d"
       }
     }

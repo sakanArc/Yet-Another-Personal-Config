@@ -164,7 +164,6 @@ proxy-providers:
     interval: 0
     path: ./proxy_providers/proxy.yaml
     proxy: DIRECT
-    exclude-filter: ":"
     health-check:
       enable: true
       interval: 3600
