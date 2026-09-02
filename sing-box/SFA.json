@@ -158,6 +158,18 @@
   ],
   "inbounds": [
     {
+      "type": "mixed",
+      "tag": "Mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 8118,
+      "tcp_fast_open": true,
+      "disable_tcp_keep_alive": false,
+      "tcp_keep_alive": "2m",
+      "tcp_keep_alive_interval": "30s",
+      "udp_fragment": false,
+      "udp_timeout": "2m"
+    },
+    {
       "type": "tun",
       "tag": "Tun-in",
       "interface_name": "utun0",
@@ -278,9 +290,22 @@
       },
       {
         "rule_set": ["geosite-private"],
-        "ip_is_private": true,
+        "action": "resolve"
+      },
+      {
+        "rule_set": ["geoip-private"],
         "action": "route",
         "outbound": "Direct"
+      },
+      {
+        "clash_mode": "direct",
+        "action": "route",
+        "outbound": "Direct"
+      },
+      {
+        "clash_mode": "global",
+        "action": "route",
+        "outbound": "🎯手动选择"
       },
       {
         "rule_set": ["geosite-category-ads-all"],
@@ -453,6 +478,13 @@
       },
       {
         "type": "remote",
+        "tag": "geoip-private",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/private.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
         "tag": "geoip-cn",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/cn.srs",
@@ -485,28 +517,11 @@
     "default_http_client": "HTTP-Direct",
     "default_domain_resolver": "Direct_DNS"
   },
-  "services": [
-    {
-      "type": "api",
-      "listen": "127.0.0.1",
-      "listen_port": 9090,
-      "tcp_fast_open": true,
-      "secret": "114514",
-      "access_control_allow_private_network": false,
-      "dashboard": {
-        "enabled": true,
-        "path": "zashboard",
-        "download_url": "https://github.com/Zephyruso/zashboard/releases/download/v3.22.0/dist-no-fonts.zip",
-        "http_client": "HTTP-Direct",
-        "update_interval": "1d"
-      }
-    }
-  ],
   "experimental": {
     "cache_file": {
       "enabled": true,
       "path": "cache.db",
-      "cache_id": "test",
+      "cache_id": "config",
       "store_fakeip": true,
       "store_dns": true
     }

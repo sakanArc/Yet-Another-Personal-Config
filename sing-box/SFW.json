@@ -167,8 +167,7 @@
       "tcp_keep_alive": "2m",
       "tcp_keep_alive_interval": "30s",
       "udp_fragment": false,
-      "udp_timeout": "2m",
-      "set_system_proxy": true
+      "udp_timeout": "2m"
     },
     {
       "type": "tun",
@@ -186,7 +185,14 @@
       "udp_mapping": "endpoint_independent",
       "udp_filtering": "endpoint_independent",
       "udp_nat_max": 0,
-      "stack": "mixed"
+      "stack": "mixed",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 8118
+        }
+      }
     }
   ],
   "outbounds": [
