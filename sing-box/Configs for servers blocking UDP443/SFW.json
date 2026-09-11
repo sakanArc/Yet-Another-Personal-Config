@@ -19,7 +19,7 @@
         "tag": "DNS_hosts",
         "predefined": {
           "dns.alidns.com": ["223.5.5.5", "223.6.6.6", "2400:3200::1", "2400:3200:baba::1"],
-          "dns.google": ["8.8.8.8", "8.8.4.4"]
+          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15"]
         }
       },
       {
@@ -32,11 +32,10 @@
         "domain_resolver": "DNS_hosts"
       },
       {
-        "type": "h3",
+        "type": "quic",
         "tag": "Remote_DNS",
-        "server": "dns.google",
-        "server_port": 443,
-        "path": "/dns-query",
+        "server": "dns.adguard-dns.com",
+        "server_port": 853,
         "detour": "🎯手动选择",
         "domain_resolver": "DNS_hosts"
       },
@@ -103,9 +102,7 @@
         "server": "Remote_DNS",
         "tag": "No_matches",
         "disable_cache": false,
-        "disable_optimistic_cache": false,
-        "client_subnet": "0.0.0.0/24",
-        "remove_client_subnet": false
+        "disable_optimistic_cache": false
       },
       {
         "match_response": "No_matches",
@@ -118,6 +115,10 @@
         "rule_set": "geoip-cn",
         "action": "route",
         "server": "Direct_DNS"
+      },
+      {
+        "match_response": "No_matches",
+        "action": "respond"
       }
     ],
     "final": "Remote_DNS",
@@ -176,7 +177,6 @@
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
-      "auto_redirect": true,
       "strict_route": true,
       "udp_timeout": "2m",
       "udp_mapping": "endpoint_independent",

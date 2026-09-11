@@ -19,7 +19,7 @@
         "tag": "DNS_hosts",
         "predefined": {
           "dns.alidns.com": ["223.5.5.5", "223.6.6.6", "2400:3200::1", "2400:3200:baba::1"],
-          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15"]
+          "dns.google": ["8.8.8.8", "8.8.4.4"]
         }
       },
       {
@@ -32,10 +32,11 @@
         "domain_resolver": "DNS_hosts"
       },
       {
-        "type": "quic",
+        "type": "h3",
         "tag": "Remote_DNS",
-        "server": "dns.adguard-dns.com",
-        "server_port": 853,
+        "server": "dns.google",
+        "server_port": 443,
+        "path": "/dns-query",
         "detour": "🎯手动选择",
         "domain_resolver": "DNS_hosts"
       },
@@ -103,7 +104,7 @@
         "tag": "No_matches",
         "disable_cache": false,
         "disable_optimistic_cache": false,
-        "client_subnet": "1.1.1.1/24",
+        "client_subnet": "0.0.0.0/24",
         "remove_client_subnet": false
       },
       {
@@ -117,11 +118,6 @@
         "rule_set": "geoip-cn",
         "action": "route",
         "server": "Direct_DNS"
-      },
-      {
-        "match_response": "No_matches",
-        "action": "route",
-        "server": "Fake_DNS"
       }
     ],
     "final": "Remote_DNS",
