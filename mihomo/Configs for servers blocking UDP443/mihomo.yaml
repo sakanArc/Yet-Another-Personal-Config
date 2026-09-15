@@ -28,7 +28,7 @@ unified-delay: true
 
 tun:
   enable: true
-  stack: system
+  stack: mips
   dns-hijack:
     - udp://any:53
     - tcp://any:53
