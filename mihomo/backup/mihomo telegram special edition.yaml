@@ -127,6 +127,24 @@ proxy-groups:
       - proxy
     hidden: false
 
+  - name: ✈️Telegram SG
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: ✈️Telegram NL
+    type: select
+    use:
+      - proxy
+    hidden: false
+
+  - name: ✈️Telegram US
+    type: select
+    use:
+      - proxy
+    hidden: false
+
   - name: 🍎Apple
     type: select
     proxies:
@@ -170,6 +188,8 @@ rules:
   - AND,((DST-PORT,443),(NETWORK,UDP),(GEOSITE,geolocation-!cn)),REJECT
   - GEOSITE,google,🔤Google
   - GEOSITE,category-ai-!cn,🤖AI
+  - SUB-RULE,(GEOSITE,telegram),telegram
+  - SUB-RULE,(GEOIP,telegram,no-resolve),telegram
   - GEOSITE,apple,🍎Apple
   - GEOSITE,geolocation-!cn@cn,DIRECT
   - GEOSITE,geolocation-!cn,🎯手动选择
@@ -178,3 +198,9 @@ rules:
   - GEOIP,cn,DIRECT
   - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT
   - MATCH,🎯手动选择
+
+sub-rules:
+  telegram:
+    - GEOIP,nl,✈️Telegram NL
+    - GEOIP,us,✈️Telegram US
+    - MATCH,✈️Telegram SG

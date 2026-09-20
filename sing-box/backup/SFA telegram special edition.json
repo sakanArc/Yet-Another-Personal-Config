@@ -19,7 +19,7 @@
         "tag": "DNS_hosts",
         "predefined": {
           "dns.alidns.com": ["223.5.5.5", "223.6.6.6", "2400:3200::1", "2400:3200:baba::1"],
-          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15"]
+          "dns.google": ["8.8.8.8", "8.8.4.4"]
         }
       },
       {
@@ -32,10 +32,11 @@
         "domain_resolver": "DNS_hosts"
       },
       {
-        "type": "quic",
+        "type": "h3",
         "tag": "Remote_DNS",
-        "server": "dns.adguard-dns.com",
-        "server_port": 853,
+        "server": "dns.google",
+        "server_port": 443,
+        "path": "/dns-query",
         "detour": "🎯手动选择",
         "domain_resolver": "DNS_hosts"
       },
@@ -83,6 +84,11 @@
         "server": "Remote_DNS"
       },
       {
+        "rule_set": ["geosite-telegram"],
+        "action": "route",
+        "server": "Remote_DNS"
+      },
+      {
         "rule_set": ["geosite-geolocation-!cn"],
         "action": "route",
         "server": "Fake_DNS"
@@ -97,13 +103,9 @@
         "server": "Remote_DNS",
         "tag": "No_matches",
         "disable_cache": false,
-        "disable_optimistic_cache": false
-      },
-      {
-        "match_response": "No_matches",
-        "ip_cidr": ["0.0.0.0"],
-        "action": "predefined",
-        "rcode": "NOERROR"
+        "disable_optimistic_cache": false,
+        "client_subnet": "0.0.0.0/24",
+        "remove_client_subnet": false
       },
       {
         "match_response": "No_matches",
@@ -113,7 +115,9 @@
       },
       {
         "match_response": "No_matches",
-        "action": "respond"
+        "query_type": ["A", "AAAA"],
+        "action": "route",
+        "server": "Fake_DNS"
       }
     ],
     "final": "Remote_DNS",
@@ -183,6 +187,7 @@
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
+      "auto_redirect": true,
       "strict_route": true,
       "udp_timeout": "2m",
       "udp_mapping": "endpoint_independent",
@@ -219,6 +224,33 @@
     {
       "type": "selector",
       "tag": "🤖AI",
+      "outbounds": [
+        "Direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "✈️Telegram SG",
+      "outbounds": [
+        "Direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "✈️Telegram NL",
+      "outbounds": [
+        "Direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "selector",
+      "tag": "✈️Telegram US",
       "outbounds": [
         "Direct"
       ],
@@ -295,6 +327,44 @@
         "rule_set": ["geosite-category-ai-!cn"],
         "action": "route",
         "outbound": "🤖AI"
+      },
+      {
+        "rule_set": ["geosite-telegram"],
+        "action": "resolve",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": "geoip-telegram"
+          },
+          {
+            "rule_set": "geoip-sg"
+          }
+        ],
+        "action": "route",
+        "outbound": "✈️Telegram SG"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": "geoip-telegram"
+          },
+          {
+            "rule_set": "geoip-nl"
+          }
+        ],
+        "action": "route",
+        "outbound": "✈️Telegram NL"
+      },
+      {
+        "rule_set": "geoip-telegram",
+        "action": "route",
+        "outbound": "✈️Telegram US"
       },
       {
         "rule_set": ["geosite-apple"],
@@ -407,6 +477,13 @@
       },
       {
         "type": "remote",
+        "tag": "geosite-telegram",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
         "tag": "geoip-private",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/private.srs",
@@ -417,6 +494,27 @@
         "tag": "geoip-cn",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/cn.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-sg",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/sg.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-nl",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/nl.srs",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-telegram",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@sing/geo/geoip/telegram.srs",
         "update_interval": "1d"
       }
     ],
