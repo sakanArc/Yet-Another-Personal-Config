@@ -8,6 +8,15 @@
 > [!NOTE]
 > These are personal configurations, shared as-is. Review and adapt them to your own setup before use.
 
+## Requirements
+
+These configurations rely on recent kernel features and will fail to load on older versions.
+
+| Kernel | Minimum Version |
+| :--- | :---: |
+| **sing-box** | 1.15.0 |
+| **mihomo** | 1.19.31 |
+
 ## Credits
 
 | Kernel | Description | Links |

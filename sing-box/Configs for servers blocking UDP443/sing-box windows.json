@@ -59,8 +59,14 @@
       },
       {
         "clash_mode": "global",
+        "query_type": ["A", "AAAA"],
         "action": "route",
         "server": "Fake_DNS"
+      },
+      {
+        "clash_mode": "global",
+        "action": "route",
+        "server": "Remote_DNS"
       },
       {
         "rule_set": ["geosite-category-ads-all"],
@@ -84,8 +90,14 @@
       },
       {
         "rule_set": ["geosite-geolocation-!cn"],
+        "query_type": ["A", "AAAA"],
         "action": "route",
         "server": "Fake_DNS"
+      },
+      {
+        "rule_set": ["geosite-geolocation-!cn"],
+        "action": "route",
+        "server": "Remote_DNS"
       },
       {
         "rule_set": ["geosite-cn"],
