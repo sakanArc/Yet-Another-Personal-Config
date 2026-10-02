@@ -179,8 +179,7 @@
       "tcp_fast_open": true,
       "disable_tcp_keep_alive": false,
       "udp_fragment": false,
-      "udp_timeout": "2m",
-      "set_system_proxy": true
+      "udp_timeout": "2m"
     },
     {
       "type": "tun",
@@ -193,11 +192,17 @@
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
-      "strict_route": true,
       "udp_timeout": "2m",
       "udp_mapping": "endpoint_independent",
       "udp_filtering": "endpoint_independent",
-      "udp_nat_max": 0
+      "udp_nat_max": 0,
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 8118
+        }
+      }
     }
   ],
   "outbounds": [
@@ -250,7 +255,6 @@
       "type": "direct",
       "tag": "Direct",
       "tcp_fast_open": true,
-      "tcp_multi_path": true,
       "disable_tcp_keep_alive": false
     }
   ],

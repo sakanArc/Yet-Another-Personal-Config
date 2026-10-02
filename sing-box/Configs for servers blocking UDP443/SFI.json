@@ -19,7 +19,7 @@
         "tag": "DNS_hosts",
         "predefined": {
           "dns.alidns.com": ["223.5.5.5", "223.6.6.6", "2400:3200::1", "2400:3200:baba::1"],
-          "dns.google": ["8.8.8.8", "8.8.4.4"]
+          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15"]
         }
       },
       {
@@ -32,11 +32,10 @@
         "domain_resolver": "DNS_hosts"
       },
       {
-        "type": "h3",
+        "type": "quic",
         "tag": "Remote_DNS",
-        "server": "dns.google",
-        "server_port": 443,
-        "path": "/dns-query",
+        "server": "dns.adguard-dns.com",
+        "server_port": 853,
         "detour": "🎯手动选择",
         "domain_resolver": "DNS_hosts"
       },
@@ -110,9 +109,13 @@
         "server": "Remote_DNS",
         "tag": "No_matches",
         "disable_cache": false,
-        "disable_optimistic_cache": false,
-        "client_subnet": "0.0.0.0/24",
-        "remove_client_subnet": false
+        "disable_optimistic_cache": false
+      },
+      {
+        "match_response": "No_matches",
+        "ip_cidr": ["0.0.0.0"],
+        "action": "predefined",
+        "rcode": "NOERROR"
       },
       {
         "match_response": "No_matches",
@@ -122,9 +125,7 @@
       },
       {
         "match_response": "No_matches",
-        "query_type": ["A", "AAAA"],
-        "action": "route",
-        "server": "Fake_DNS"
+        "action": "respond"
       }
     ],
     "final": "Remote_DNS",
@@ -179,8 +180,7 @@
       "tcp_fast_open": true,
       "disable_tcp_keep_alive": false,
       "udp_fragment": false,
-      "udp_timeout": "2m",
-      "set_system_proxy": true
+      "udp_timeout": "2m"
     },
     {
       "type": "tun",
@@ -193,11 +193,17 @@
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
-      "strict_route": true,
       "udp_timeout": "2m",
       "udp_mapping": "endpoint_independent",
       "udp_filtering": "endpoint_independent",
-      "udp_nat_max": 0
+      "udp_nat_max": 0,
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 8118
+        }
+      }
     }
   ],
   "outbounds": [
@@ -250,7 +256,6 @@
       "type": "direct",
       "tag": "Direct",
       "tcp_fast_open": true,
-      "tcp_multi_path": true,
       "disable_tcp_keep_alive": false
     }
   ],

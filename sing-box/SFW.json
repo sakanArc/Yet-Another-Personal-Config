@@ -178,8 +178,6 @@
       "listen_port": 8118,
       "tcp_fast_open": true,
       "disable_tcp_keep_alive": false,
-      "tcp_keep_alive": "2m",
-      "tcp_keep_alive_interval": "30s",
       "udp_fragment": false,
       "udp_timeout": "2m"
     },
@@ -259,9 +257,7 @@
       "tag": "Direct",
       "tcp_fast_open": true,
       "tcp_multi_path": true,
-      "disable_tcp_keep_alive": false,
-      "tcp_keep_alive": "2m",
-      "tcp_keep_alive_interval": "30s"
+      "disable_tcp_keep_alive": false
     }
   ],
   "route": {
