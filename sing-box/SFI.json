@@ -154,8 +154,6 @@
       "disable_version_fallback": false,
       "headers": {},
       "detour": "Direct",
-      "tcp_fast_open": true,
-      "disable_tcp_keep_alive": true,
       "domain_resolver": "Direct_DNS"
     },
     {
@@ -165,8 +163,6 @@
       "disable_version_fallback": false,
       "headers": {},
       "detour": "🎯手动选择",
-      "tcp_fast_open": true,
-      "disable_tcp_keep_alive": true,
       "domain_resolver": "Fake_DNS"
     }
   ],
