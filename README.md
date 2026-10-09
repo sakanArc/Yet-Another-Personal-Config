@@ -13,13 +13,13 @@
 These configurations rely on recent kernel features and will fail to load on older versions.
 
 | Kernel | Minimum Version |
-| :--- | :---: |
+| :---: | :---: |
 | **sing-box** | 1.15.0 |
 | **mihomo** | 1.19.31 |
 
 ## Credits
 
 | Kernel | Description | Links |
-| :--- | :--- | :--- |
+| :---: | :---: | :---: |
 | **sing-box** | The universal proxy platform | [GitHub](https://github.com/SagerNet/sing-box) · [Docs](https://sing-box.sagernet.org/) |
 | **mihomo** | Another Clash kernel | [GitHub](https://github.com/MetaCubeX/mihomo/tree/Meta) · [Docs](https://wiki.metacubex.one/) |
