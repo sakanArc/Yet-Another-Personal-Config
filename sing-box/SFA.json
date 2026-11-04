@@ -100,6 +100,11 @@
         "server": "Remote_DNS"
       },
       {
+        "domain_suffix": [".steamserver.net"],
+        "action": "route",
+        "server": "Direct_DNS"
+      },
+      {
         "rule_set": ["geosite-geolocation-!cn"],
         "query_type": ["A", "AAAA"],
         "action": "route",
@@ -192,6 +197,7 @@
       "tag": "Tun-in",
       "interface_name": "utun0",
       "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
+      "multi_queue": true,
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
@@ -256,6 +262,18 @@
   "route": {
     "rules": [
       {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": ["geoip-private", "geosite-cn", "geoip-cn"],
+            "invert": true
+          },
+          {
+            "clash_mode": "direct",
+            "invert": true
+          }
+        ],
         "action": "sniff"
       },
       {
@@ -268,12 +286,12 @@
       },
       {
         "rule_set": ["geoip-private"],
-        "action": "route",
+        "action": "bypass",
         "outbound": "Direct"
       },
       {
         "clash_mode": "direct",
-        "action": "route",
+        "action": "bypass",
         "outbound": "Direct"
       },
       {
@@ -283,6 +301,12 @@
       },
       {
         "rule_set": ["geosite-category-ads-all"],
+        "action": "reject",
+        "method": "default"
+      },
+      {
+        "protocol": ["quic"],
+        "rule_set": "geosite-geolocation-!cn",
         "action": "reject",
         "method": "default"
       },
@@ -303,7 +327,7 @@
       },
       {
         "domain_suffix": [".steamserver.net"],
-        "action": "route",
+        "action": "bypass",
         "outbound": "Direct"
       },
       {
@@ -318,7 +342,7 @@
       },
       {
         "rule_set": ["geosite-cn"],
-        "action": "route",
+        "action": "bypass",
         "outbound": "Direct"
       },
       {
@@ -328,8 +352,13 @@
       },
       {
         "rule_set": ["geoip-cn"],
-        "action": "route",
+        "action": "bypass",
         "outbound": "Direct"
+      },
+      {
+        "protocol": ["quic"],
+        "action": "reject",
+        "method": "default"
       }
     ],
     "rule_set": [
