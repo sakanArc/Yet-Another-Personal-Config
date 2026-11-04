@@ -18,8 +18,18 @@
         "type": "hosts",
         "tag": "DNS_hosts",
         "predefined": {
-          "dns.alidns.com": ["223.5.5.5", "223.6.6.6", "2400:3200::1", "2400:3200:baba::1"],
-          "dns.adguard-dns.com": ["94.140.14.14", "94.140.15.15", "2a10:50c0::ad1:ff", "2a10:50c0::ad2:ff"]
+          "dns.alidns.com": [
+            "223.5.5.5",
+            "223.6.6.6",
+            "2400:3200::1",
+            "2400:3200:baba::1"
+          ],
+          "dns.adguard-dns.com": [
+            "94.140.14.14",
+            "94.140.15.15",
+            "2a10:50c0::ad1:ff",
+            "2a10:50c0::ad2:ff"
+          ]
         }
       },
       {
@@ -78,7 +88,7 @@
         "mode": "and",
         "rules": [
           {
-            "rule_set": ["geosite-category-stun", "geosite-category-voip", "geosite-category-ntp"]
+            "rule_set": ["geosite-category-stun", "geosite-category-ntp"]
           },
           {
             "rule_set": ["geosite-cn"],
@@ -187,10 +197,7 @@
       "type": "tun",
       "tag": "Tun-in",
       "interface_name": "utun0",
-      "address": [
-        "172.18.0.1/30",
-        "fdfe:dcba:9876::1/126"
-      ],
+      "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
@@ -205,45 +212,35 @@
     {
       "type": "selector",
       "tag": "🎯手动选择",
-      "outbounds": [
-        "Direct"
-      ],
+      "outbounds": ["Direct"],
       "default": "",
       "interrupt_exist_connections": true
     },
     {
       "type": "selector",
       "tag": "🔤Google",
-      "outbounds": [
-        "Direct"
-      ],
+      "outbounds": ["Direct"],
       "default": "",
       "interrupt_exist_connections": true
     },
     {
       "type": "selector",
       "tag": "🤖AI",
-      "outbounds": [
-        "Direct"
-      ],
+      "outbounds": ["Direct"],
       "default": "",
       "interrupt_exist_connections": true
     },
     {
       "type": "selector",
       "tag": "🍎Apple",
-      "outbounds": [
-        "Direct"
-      ],
+      "outbounds": ["Direct"],
       "default": "",
       "interrupt_exist_connections": true
     },
     {
       "type": "selector",
       "tag": "📺bilibili",
-      "outbounds": [
-        "Direct"
-      ],
+      "outbounds": ["Direct"],
       "default": "",
       "interrupt_exist_connections": true
     },
@@ -304,6 +301,11 @@
         "outbound": "🍎Apple"
       },
       {
+        "domain_suffix": [".steamserver.net"],
+        "action": "route",
+        "outbound": "Direct"
+      },
+      {
         "rule_set": ["geosite-geolocation-!cn"],
         "action": "route",
         "outbound": "🎯手动选择"
@@ -361,13 +363,6 @@
       {
         "type": "remote",
         "tag": "geosite-category-stun",
-        "format": "binary",
-        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
-        "update_interval": "1d"
-      },
-      {
-        "type": "remote",
-        "tag": "geosite-category-voip",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/{tag}.srs",
         "update_interval": "1d"
