@@ -202,7 +202,6 @@
       "tag": "Tun-in",
       "interface_name": "utun0",
       "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
-      "multi_queue": true,
       "mtu": 9000,
       "dns_mode": "hijack",
       "auto_route": true,
