@@ -90,6 +90,7 @@ dns:
     - geosite:private
     - geosite:category-ntp
     - geosite:category-stun
+    - geosite:category-voip
   fake-ip-filter-mode: blacklist
   respect-rules: false
   default-nameserver:
@@ -190,7 +191,6 @@ rules:
   - SUB-RULE,(GEOSITE,telegram),telegram
   - SUB-RULE,(GEOIP,telegram,no-resolve),telegram
   - GEOSITE,apple,🍎Apple
-  - DOMAIN-SUFFIX,steamserver.net,DIRECT
   - GEOSITE,geolocation-!cn@cn,DIRECT
   - GEOSITE,geolocation-!cn,🎯手动选择
   - GEOSITE,bilibili,📺bilibili
