@@ -10,7 +10,7 @@ geo-update-interval: 24
 geosite-matcher: succinct
 geodata-mode: false
 geodata-loader: memconservative
-global-ua: ClashMetaForAndroid/2.11.33.Meta
+global-ua: ClashMetaForAndroid/2.11.37.Meta
 etag-support: true
 log-level: warning
 ipv6: true
@@ -80,7 +80,6 @@ dns:
   prefer-h3: false
   use-hosts: true
   use-system-hosts: false
-  listen: 0.0.0.0:1053
   ipv6: true
   ipv6-timeout: 200
   enhanced-mode: fake-ip

@@ -1,0 +1,170 @@
+mixed-port: 8118
+allow-lan: false
+mode: rule
+disable-keep-alive: false
+find-process-mode: strict
+geo-auto-update: true
+geo-update-interval: 24
+global-ua: ClashMetaForAndroid/2.11.37.Meta
+ipv6: true
+keep-alive-idle: 60
+keep-alive-interval: 30
+log-level: warning
+tcp-concurrent: true
+unified-delay: true
+profile:
+  store-fake-ip: true
+
+ntp:
+  enable: true
+  interval: 60
+  port: 123
+  server: cn.pool.ntp.org
+  write-to-system: false
+
+tun:
+  enable: true
+  auto-detect-interface: true
+  auto-route: true
+  strict-route: true
+  congestion-controller: bbr3
+  device: utun0
+  disable-icmp-forwarding: false
+  dns-hijack:
+    - 0.0.0.0:53
+  mtu: 9000
+  stack: mips
+  udp-timeout: 60
+
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  override-destination: false
+  parse-pure-ip: false
+  sniff:
+    HTTP:
+      ports:
+        - 80
+        - 8080-8880
+    TLS:
+      ports:
+        - 443
+        - 8443
+    QUIC:
+      ports:
+        - 443
+        - 8443
+
+dns:
+  enable: true
+  cache-algorithm: "arc"
+  cache-max-size: 2048
+  ipv6: false
+  ipv6-timeout: 200
+  enhanced-mode: fake-ip
+  fake-ip-filter:
+    - geosite:private
+    - geosite:category-ntp
+    - geosite:category-stun
+  fake-ip-filter-mode: blacklist
+  fake-ip-range: 198.18.0.0/15
+  fake-ip-range6: 2001:2::/48
+  fake-ip-ttl: 1
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query#h3=true
+    - https://doh.pub/dns-query
+  direct-nameserver-follow-policy: true
+  nameserver:
+    - https://dns.google#🎯手动选择
+  nameserver-policy:
+    geosite:category-ads-all: rcode://success
+  prefer-h3: false
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query#h3=true
+    - https://doh.pub/dns-query
+  proxy-server-nameserver-policy:
+    example.com: https://dns.alidns.com/dns-query#h3=true
+  respect-rules: false
+  use-hosts: true
+  use-system-hosts: false
+
+proxy-groups:
+  - name: 🎯手动选择
+    type: select
+    use:
+      - provider-http
+    hidden: false
+
+  - name: 🔤Google
+    type: select
+    use:
+      - provider-http
+    hidden: false
+
+  - name: 🤖AI
+    type: select
+    use:
+      - provider-http
+    hidden: false
+
+  - name: 🍎Apple
+    type: select
+    proxies:
+      - DIRECT
+      - 🎯手动选择
+    use:
+      - provider-http
+    hidden: false
+
+  - name: 📺bilibili
+    type: select
+    proxies:
+      - DIRECT
+      - 🎯手动选择
+    use:
+      - provider-http
+    hidden: false
+
+proxy-providers:
+  provider-http:
+    type: http
+    url: https://example.com/providers.yaml
+    path: providers/provider-http.yaml
+    exclude-filter: ""
+    exclude-type: ""
+    filter: ""
+    health-check:
+      enable: true
+      interval: 3600
+      lazy: true
+      timeout: 5000
+      url: https://captive.apple.com/
+    interval: 21600
+    override:
+      skip-cert-verify: false
+      tfo: true
+      udp: true
+
+geox-url:
+  asn: https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@release/GeoLite2-ASN-lite.mmdb
+  geosite: https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/dlc.dat
+  mmdb: https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@release/geoip-lite.metadb
+
+rules:
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,category-ads-all,REJECT
+  - AND,((DST-PORT,443),(NETWORK,UDP),(GEOSITE,geolocation-!cn)),REJECT
+  - GEOSITE,google,🔤Google
+  - GEOSITE,category-ai-!cn,🤖AI
+  - GEOSITE,apple,🍎Apple
+  - GEOSITE,geolocation-!cn@cn,DIRECT
+  - GEOSITE,geolocation-!cn,🎯手动选择
+  - GEOSITE,bilibili,📺bilibili
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT
+  - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT
+  - MATCH,🎯手动选择

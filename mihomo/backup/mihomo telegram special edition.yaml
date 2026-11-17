@@ -10,7 +10,7 @@ geo-update-interval: 24
 geosite-matcher: succinct
 geodata-mode: false
 geodata-loader: memconservative
-global-ua: ClashMetaForAndroid/2.11.33.Meta
+global-ua: ClashMetaForAndroid/2.11.37.Meta
 etag-support: true
 log-level: warning
 ipv6: true
@@ -80,7 +80,6 @@ dns:
   prefer-h3: false
   use-hosts: true
   use-system-hosts: false
-  listen: 0.0.0.0:1053
   ipv6: true
   ipv6-timeout: 200
   enhanced-mode: fake-ip
@@ -90,7 +89,6 @@ dns:
     - geosite:private
     - geosite:category-ntp
     - geosite:category-stun
-    - geosite:category-voip
   fake-ip-filter-mode: blacklist
   respect-rules: false
   default-nameserver:
@@ -104,7 +102,7 @@ dns:
     - https://doh.pub/dns-query#DIRECT
   direct-nameserver-follow-policy: true
   nameserver:
-    - https://dns.google#🎯手动选择&h3=true&ecs=0.0.0.0/24
+    - https://dns.google#🎯手动选择&h3=true
   nameserver-policy:
     geosite:category-ads-all: rcode://success
 
